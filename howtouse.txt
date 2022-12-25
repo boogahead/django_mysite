@@ -1,0 +1,2 @@
+python manage.py runserver 하면 돌아감
+env설정하고 터미널 따로 해서 실행할것 그래야 서버 돌아가니까.
