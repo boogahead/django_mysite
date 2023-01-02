@@ -1,7 +1,8 @@
 from django.shortcuts import render,redirect
-from .models import Room
+from .models import Room,Topic
 from django.http import HttpResponse
 from .forms import RoomForm
+from django.db.models import Q
 # Create your views here.
 #function / classes deals with what something people will see if they go to certain url
 
@@ -11,9 +12,24 @@ from .forms import RoomForm
 #    {'id':3,'name':'Frontend Developers'},
 #]
 
+def loginPage():
+    context={}
+    return render(request,'base/login_register.html',context)
+
 def home(request):
-    rooms=Room.objects.all # give all the rooms in the database
-    context={'rooms':rooms} #save the things you want to send in insi de the context variable
+    q= request.GET.get('q') if request.GET.get('q')!= None else '' # q is whatever we passed through te url if nothing passed in , just set as empty
+
+    
+    rooms=Room.objects.filter(Q(topic__name__contains=q) |
+    Q(name__icontains=q) |
+    Q(description__icontains=q)
+    ) # give all the rooms in the database 
+    #rooms=Room.objects.all()
+    topics=Topic.objects.all()
+    
+    room_count=rooms.count()
+
+    context={'rooms':rooms,'topics':topics,'room_count':room_count} #save the things you want to send in insi de the context variable
     return render(request,'base/home.html',context) #the rooms[] is passed onto the 'home' page.
     #(templates folder inside base folder) base/home.html 
 def room(request,pk): #can pass in dynamic value
