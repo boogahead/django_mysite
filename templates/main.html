@@ -10,8 +10,16 @@
 
 <body>
     {% include 'navbar.html' %} <!--place it on the top of every page -->
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
     {% block content %} <!--content wrapper-->
 
     {% endblock %} 
 </body>
+
 </html>

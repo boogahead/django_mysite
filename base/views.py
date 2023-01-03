@@ -3,6 +3,9 @@ from .models import Room,Topic
 from django.http import HttpResponse
 from .forms import RoomForm
 from django.db.models import Q
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.contrib.auth import authenticate, login,logout
 # Create your views here.
 #function / classes deals with what something people will see if they go to certain url
 
@@ -12,7 +15,22 @@ from django.db.models import Q
 #    {'id':3,'name':'Frontend Developers'},
 #]
 
-def loginPage():
+def loginPage(request):
+    if request.method=='POST':
+        username=request.POST.get('username')
+        password=request.POST.get('password')# receiving data from frontend
+
+        try: #try to query user
+            user=User.objects.get(username=username)
+        except:
+            messages.error(request,'User Does Not Exist')
+        user=authenticate(request,username=username,password=password) # if exist, authenticate the user give us an error / give a user that mathches the credentials
+        if user is not None : # if we have a user
+            login(request,user)# add session to database
+            return redirect('home') #send logged in user to home page
+        else:
+            messages.error(request,'username or password does not exist')
+
     context={}
     return render(request,'base/login_register.html',context)
 
