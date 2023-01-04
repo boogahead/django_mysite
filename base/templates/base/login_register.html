@@ -2,6 +2,7 @@
 
 {%block content%}
 
+{% if page == 'login' %}
 <div>
     <form method="POST"action="">  <!--method post : send action to server-->
         {%csrf_token%}
@@ -13,5 +14,20 @@
         
         <input type="submit" value="Login"/>
     </form>
+    <p>haven't signed up yet?</p> <!-- adding havent signed up yet form -->
+    <a href="{%url 'register'%}">Sign up</a>
 </div>
+{%else %}
+<div>
+    <form method="POST"action="">  <!--method post : send action to server-->
+        {%csrf_token%}
+        
+        <input type="submit" value="Register"/>
+    </form> 
+    
+    <p>already signed up?</p><!-- adding already signed up form -->
+    <a href="{%url 'Login'%}">Login</a>
+</div>
+{%endif%}
+
 {%endblock content%}
