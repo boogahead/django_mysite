@@ -21,7 +21,7 @@
 <div>
     <form method="POST"action="">  <!--method post : send action to server-->
         {%csrf_token%}
-        
+        {{form.as_p}}
         <input type="submit" value="Register"/>
     </form> 
     

@@ -8,6 +8,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login,logout
 from django.http import HttpResponse
+from django.contrib.auth.forms import UserCreationForm
+
 # Create your views here.
 #function / classes deals with what something people will see if they go to certain url
 
@@ -23,7 +25,7 @@ def loginPage(request):
         return redirect('home')
 
     if request.method=='POST':
-        username=request.POST.get('username')
+        username=request.POST.get('username').lower()
         password=request.POST.get('password')# receiving data from frontend
 
         try: #try to query user
@@ -45,8 +47,21 @@ def logoutUser(request):
     return redirect('home')
 
 def registerPage(request):
-    page='register'
-    return render(request,'base/login_register.html')
+    #page='register'
+    form=UserCreationForm() #create a template user creation form
+
+    if request.method == 'POST': #process form created
+        form=UserCreationForm(request.POST)# go through the usercreation form input made by user
+        if form.is_valid():#if form valid
+            user=form.save(commit=False)  #check whether there are any dirty data (upper case in email for example) so dont commit straightaway
+            user.username=user.username.lower() #turn username to lowercase if there are any uppercase
+            user.save()
+            login(request,user) #log the registered user in 
+            return redirect('home')# return to homepage
+        else:
+            messages.error(request,"An error has Occured during registration!")
+        
+    return render(request,'base/login_register.html',{'form':form})
 
 def home(request):
     q= request.GET.get('q') if request.GET.get('q')!= None else '' # q is whatever we passed through te url if nothing passed in , just set as empty
@@ -64,9 +79,13 @@ def home(request):
     context={'rooms':rooms,'topics':topics,'room_count':room_count} #save the things you want to send in insi de the context variable
     return render(request,'base/home.html',context) #the rooms[] is passed onto the 'home' page.
     #(templates folder inside base folder) base/home.html 
+
 def room(request,pk): #can pass in dynamic value
     room=Room.objects.get(id=pk) # return back one single item id=pk means unique id so it can spew out only one room
-    context={'room':room}
+    room_messages=room.message_set.all().order_by('-created') # we can query the children of certian Model. wea re getting all the children(comments) from the model Messages. (its in models.py messages)
+    #give us the set of messages related to the specified room
+
+    context={'room':room,'room_messages':room_messages}
     return render(request,'base/room.html',context)
 
 @login_required(login_url='Login') #if user is not authenticated, user will be directed to a page to login
