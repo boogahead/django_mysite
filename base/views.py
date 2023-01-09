@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from .models import Room,Topic
+from .models import Room,Topic,Message
 from django.http import HttpResponse
 from .forms import RoomForm
 from django.db.models import Q
@@ -82,10 +82,21 @@ def home(request):
 
 def room(request,pk): #can pass in dynamic value
     room=Room.objects.get(id=pk) # return back one single item id=pk means unique id so it can spew out only one room
+    participants=room.participants.all() # query all the participants
+
+
+    if request.method=='POST':
+        message=Message.objects.create( #create message
+            user=request.user,
+            room=room,
+            body=request.POST.get('body')#get body from message
+        )
+        room.participants.add(request.user) #add participants to the participants tab   
+        return redirect('room',pk=room.id) # go back to room with updated message
     room_messages=room.message_set.all().order_by('-created') # we can query the children of certian Model. wea re getting all the children(comments) from the model Messages. (its in models.py messages)
     #give us the set of messages related to the specified room
 
-    context={'room':room,'room_messages':room_messages}
+    context={'room':room,'room_messages':room_messages,'participants':participants}
     return render(request,'base/room.html',context)
 
 @login_required(login_url='Login') #if user is not authenticated, user will be directed to a page to login
@@ -126,3 +137,13 @@ def deleteRoom(request,pk):
         room.delete()
         return redirect('home')
     return render(request,'base/delete.html',{'obj':room}) # "room" will be specified as obj
+
+@login_required(login_url='Login') #if user is not authenticated, user will be directed to a page to login
+def deleteMessage(request,pk):
+    message=Message.objects.get(id=pk)
+    if request.user!=message.user: #if the creator of the room is not equal to the guy trying to delete it,
+        return HttpResponse('you are not allowed here')# say that they are not allowed to do so
+    if request.method=='POST':
+        message.delete()
+        return redirect('home')
+    return render(request,'base/delete.html',{'obj':message}) # "room" will be specified as obj

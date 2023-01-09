@@ -13,7 +13,7 @@ class Room(models.Model):
     topic = models.ForeignKey(Topic,on_delete=models.SET_NULL,null=True) # make sure that this CAN be null
     name = models.CharField(max_length=200)
     description = models.TextField(null=True,blank=True)  #database can be blank with null=true blank= true : can be left blank 
-    #participants =    #store all users currently active in the room
+    participants = models.ManyToManyField(User,related_name='participants',blank=True)  #store all users currently active in the room
     
     updated= models.DateTimeField(auto_now=True)   # any time we run the save method, it saves timestamps
     created=models.DateTimeField(auto_now_add=True) # auto_now = take snapshot any time _now_add = only saved when created
