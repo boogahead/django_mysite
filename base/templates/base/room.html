@@ -22,7 +22,7 @@
             {% for message in room_messages %}
             <div>
                 {% if request.user == message.user%}<!--only the owner can see this delete option-->
-                <a href="{%url 'delete-message' message.id %}">Delete</a>
+                <a href="{%url 'delete-message' message.id %}">Delete</a><!--go to the delete message url in urls.py to delete -->
                 {%endif%}
                 <small>@{{message.user}}   {{message.created|timesince}}  </small> <!-- add user name , message creation date (e.g. 10 min ago etc ) -->
                 <p>{{message.body}}</p>

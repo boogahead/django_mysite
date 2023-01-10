@@ -67,16 +67,19 @@ def home(request):
     q= request.GET.get('q') if request.GET.get('q')!= None else '' # q is whatever we passed through te url if nothing passed in , just set as empty
 
     
-    rooms=Room.objects.filter(Q(topic__name__contains=q) |
-    Q(name__icontains=q) |
-    Q(description__icontains=q)
+    rooms=Room.objects.filter(
+        Q(topic__name__contains=q) |
+        Q(name__icontains=q) |
+        Q(description__icontains=q)
     ) # give all the rooms in the database 
     #rooms=Room.objects.all()
     topics=Topic.objects.all()
     
     room_count=rooms.count()
 
-    context={'rooms':rooms,'topics':topics,'room_count':room_count} #save the things you want to send in insi de the context variable
+    room_messages=Message.objects.filter(Q(room__topic__name__icontains=q)) # can switch to people who follow you etc # added feature to filter activities by room name
+                                        # ^ refer to Room class in models.py
+    context={'rooms':rooms,'topics':topics,'room_count':room_count,'room_messages':room_messages} #save the things you want to send in insi de the context variable
     return render(request,'base/home.html',context) #the rooms[] is passed onto the 'home' page.
     #(templates folder inside base folder) base/home.html 
 
@@ -93,7 +96,7 @@ def room(request,pk): #can pass in dynamic value
         )
         room.participants.add(request.user) #add participants to the participants tab   
         return redirect('room',pk=room.id) # go back to room with updated message
-    room_messages=room.message_set.all().order_by('-created') # we can query the children of certian Model. wea re getting all the children(comments) from the model Messages. (its in models.py messages)
+    room_messages=room.message_set.all() # we can query the children of certian Model. wea re getting all the children(comments) from the model Messages. (its in models.py messages)
     #give us the set of messages related to the specified room
 
     context={'room':room,'room_messages':room_messages,'participants':participants}

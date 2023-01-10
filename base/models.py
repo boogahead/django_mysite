@@ -31,5 +31,9 @@ class Message(models.Model):
     body = models.TextField() 
     updated= models.DateTimeField(auto_now=True)   # any time we run the save method, it saves timestamps
     created=models.DateTimeField(auto_now_add=True) # auto_now = take snapshot any time _now_add = only saved when created
+
+    class Meta:
+        ordering=['-updated','-created'] # now messages are ordered in a timely manner 
+        
     def __str__(self) :
         return self.body[0:50] # only return first 50 characters

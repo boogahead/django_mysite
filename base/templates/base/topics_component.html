@@ -1,0 +1,11 @@
+<h3>Browse Topics</h3>
+        <hr>
+        <div>
+            <a href="{% url 'home' %}" >All</a> <!-- add topics to the ned of the link e.g. http://127.0.0.1:8000/?q=PYTHON-->
+        </div>
+
+       {% for topic in topics %}
+            <div>
+                <a href="{% url 'home' %}?q={{topic.name}}" >{{topic}}</a> <!-- add topics to the ned of the link e.g. http://127.0.0.1:8000/?q=PYTHON-->
+            </div>
+       {% endfor %}
