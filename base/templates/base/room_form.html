@@ -1,0 +1,12 @@
+<!-- form for updating and deleting stuff -->
+{% extends 'main.html' %}
+
+{% block content %}
+<div>
+    <form method="POST" action="">
+        {% csrf_token %} <!-- needed for every form sent to stop forgery / attack and stuff-->
+        {{form.as_p}}<!--wrap paragraph around all the things-->
+        <input type = "submit" value="Submit"/>
+    </form>
+</div>
+{% endblock content %}
