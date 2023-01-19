@@ -23,8 +23,8 @@
             {% csrf_token %} <!-- needed for every form sent to stop forgery / attack and stuff-->
             
             <div class="form__group">
-              <label for="room_topic">Room Name</label>
-              <input required type="text" name="topic" list="topic-list" /> <!--input required = making the input mandatory to complete form-->
+              <label for="room_topic">Enter a Topic</label>
+              <input required type="text" value="{{room.topic.name}}" name="topic" list="topic-list" /> <!--input required = making the input mandatory to complete form-->
               <datalist id="topic-list"><!--options dropping down when user starts to type-->
                 <select id="room_topic">
                   {%for topic in topics %}

@@ -120,16 +120,13 @@ def createRoom(request):
         #created is a flag to see if there is a new topic typed in by the user. If the topic input is not found inside the topic list, create a new one.
         #topic takes in the topic name passed by the user form input
 
-        Room.objecs.create(
-            host=request.user
-
+        Room.objects.create(
+            host=request.user,
+            topic=topic,
+            name=request.POST.get('name'),
+            description=request.POST.get('description'),
         )
-        #form=RoomForm(request.POST)# pass all the data to form.
-        #if form.is_valid():#if valid,
-        #    room=form.save(commit=False)
-        #    room.host=request.user
-        #    room.save() #save
-            return redirect('home') #redirect user back to the homepage
+        return redirect('home') #redirect user back to the homepage
 
     context={'form':form, 'topics': topics } #pass empty dictionary
     return render(request,'base/room_form.html',context)
@@ -143,12 +140,15 @@ def updateRoom(request,pk): #passing pk to know what item we are updating
         return HttpResponse('you are not allowed here')# say that they are not allowed to do so
 
     if request.method=='POST':
-        form= RoomForm(request.POST,instance=room) #specifies which room to edit
-        if form.is_valid():
-            form.save()
-            return redirect('home')
+        topic_name=request.POST.get('topic')
+        topic,create=Topic.objects.get_or_create(name=topic_name)
+        room.name=request.POST.get('name')
+        room.topic=topic 
+        room.description=request.POST.get('description')
+        room.save()
+        return redirect('home')
     
-    context={'form':form, 'topics': topics} #want to prefill the info
+    context={'form':form, 'topics': topics,'room': room} #want to prefill the info
     return render(request,'base/room_form.html',context)
 
 @login_required(login_url='Login') #if user is not authenticated, user will be directed to a page to login
