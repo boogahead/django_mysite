@@ -113,20 +113,32 @@ def userProfile(request,pk):
 @login_required(login_url='Login') #if user is not authenticated, user will be directed to a page to login
 def createRoom(request):
     form=RoomForm()
+    topics = Topic.objects.all()
     if request.method=='POST':
-        form=RoomForm(request.POST)# pass all the data to form.
-        if form.is_valid():#if valid,
-            form.save() #save
+        topic_name=request.POST.get('topic')
+        topic,create=Topic.objects.get_or_create(name=topic_name)
+        #created is a flag to see if there is a new topic typed in by the user. If the topic input is not found inside the topic list, create a new one.
+        #topic takes in the topic name passed by the user form input
+
+        Room.objecs.create(
+            host=request.user
+
+        )
+        #form=RoomForm(request.POST)# pass all the data to form.
+        #if form.is_valid():#if valid,
+        #    room=form.save(commit=False)
+        #    room.host=request.user
+        #    room.save() #save
             return redirect('home') #redirect user back to the homepage
 
-    context={'form':form} #pass empty dictionary
+    context={'form':form, 'topics': topics } #pass empty dictionary
     return render(request,'base/room_form.html',context)
 
 @login_required(login_url='Login') #if user is not authenticated, user will be directed to a page to login
 def updateRoom(request,pk): #passing pk to know what item we are updating
     room=Room.objects.get(id=pk)
     form=RoomForm(instance=room) #fill with the room value 
-
+    topics = Topic.objects.all()
     if request.user!=room.host: #if the creator of the room is not equal to the guy trying to delete it,
         return HttpResponse('you are not allowed here')# say that they are not allowed to do so
 
@@ -136,7 +148,7 @@ def updateRoom(request,pk): #passing pk to know what item we are updating
             form.save()
             return redirect('home')
     
-    context={'form':form} #want to prefill the info
+    context={'form':form, 'topics': topics} #want to prefill the info
     return render(request,'base/room_form.html',context)
 
 @login_required(login_url='Login') #if user is not authenticated, user will be directed to a page to login
