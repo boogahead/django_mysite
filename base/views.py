@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from .models import Room,Topic,Message
 from django.http import HttpResponse
-from .forms import RoomForm
+from .forms import RoomForm,UserForm
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -12,13 +12,6 @@ from django.contrib.auth.forms import UserCreationForm
 
 # Create your views here.
 #function / classes deals with what something people will see if they go to certain url
-
-#rooms = [
-#    {'id':1,'name':'Lets learn python!'},
-#    {'id':2,'name':'Design with me'},
-#    {'id':3,'name':'Frontend Developers'},
-#]
-
 def loginPage(request):
     page='login'
     if request.user.is_authenticated: #if user already logged in, return them to homepage
@@ -94,7 +87,7 @@ def room(request,pk): #can pass in dynamic value
             room=room,
             body=request.POST.get('body')#get body from message
         )
-        room.participants.add(request.user) #add participants to the participants tab   
+        room.participants.add(request.user) #add participants  to the participants tab   
         return redirect('room',pk=room.id) # go back to room with updated message
     room_messages=room.message_set.all() # we can query the children of certian Model. wea re getting all the children(comments) from the model Messages. (its in models.py messages)
     #give us the set of messages related to the specified room
@@ -170,3 +163,16 @@ def deleteMessage(request,pk):
         message.delete()
         return redirect('home')
     return render(request,'base/delete.html',{'obj':message}) # "room" will be specified as obj
+
+@login_required(login_url='Login')# #if user is not authenticated, user will be directed to a page to login
+def updateUser(request):
+    user=request.user
+    form=UserForm(instance=user)#pass form
+
+    if request.method=='POST': #if post (update button pressed)
+        form=UserForm(request.POST,instance=user) #update user info
+        if form.is_valid():
+            form.save()
+            return redirect('user-profile', pk=user.id)
+
+    return render(request,'base/update-user.html',{'form':form}) #renders form to user
