@@ -66,7 +66,7 @@ def home(request):
         Q(description__icontains=q)
     ) # give all the rooms in the database 
     #rooms=Room.objects.all()
-    topics=Topic.objects.all()
+    topics=Topic.objects.all()[0:5] #only show maximum of 5 topics
     
     room_count=rooms.count()
 
@@ -176,3 +176,13 @@ def updateUser(request):
             return redirect('user-profile', pk=user.id)
 
     return render(request,'base/update-user.html',{'form':form}) #renders form to user
+
+
+def topicsPage(request):
+    q= request.GET.get('q') if request.GET.get('q')!= None else '' # q is whatever we passed through te url if nothing passed in , just set as empty
+    topics=Topic.objects.filter(name__icontains=q) 
+    return render(request,'base/topics.html',{'topics':topics})
+
+def activityPage(request): # store all activities in this website
+    room_messages=Message.objects.all()
+    return render(request,'base/activity.html',{'room_messages':room_messages})

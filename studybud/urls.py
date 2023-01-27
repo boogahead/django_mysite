@@ -22,4 +22,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('base.urls')),# when empty called, go to urls.py of base folder and let it handle
+    path('api/',include('base.api.urls')) #any url starting with api will be sent to /api/urls.py to be dealt with
 ]
