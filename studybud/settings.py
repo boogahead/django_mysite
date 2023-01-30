@@ -40,6 +40,10 @@ INSTALLED_APPS = [
 
     #connect base folder.
     'base.apps.BaseConfig',
+
+    'rest_framework',
+
+    
 ]
 
 MIDDLEWARE = [
