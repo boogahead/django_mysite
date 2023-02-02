@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     
 ]
 
+AUTH_USER_MODEL='base.User'#tell django what user model i wanna use - use User class from models.py file of base folder
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -125,10 +127,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
+MEDIA_URL = '/images/' #media for user uploaded pictures
 
 STATICFILES_DIRS=[
     BASE_DIR / 'static'
 ]
+
+MEDIA_ROOT=BASE_DIR/ 'static/images' #telling django to put pictures inside static/images folder
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

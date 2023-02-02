@@ -1,14 +1,14 @@
 from django.shortcuts import render,redirect
-from .models import Room,Topic,Message
+from .models import Room,Topic,Message,User #accessing our own user model
 from django.http import HttpResponse
-from .forms import RoomForm,UserForm
+from .forms import RoomForm,UserForm,MyUserCreationForm
 from django.db.models import Q
-from django.contrib.auth.models import User
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login,logout
 from django.http import HttpResponse
-from django.contrib.auth.forms import UserCreationForm
+#from django.contrib.auth.forms import UserCreationForm
 
 # Create your views here.
 #function / classes deals with what something people will see if they go to certain url
@@ -18,14 +18,14 @@ def loginPage(request):
         return redirect('home')
 
     if request.method=='POST':
-        username=request.POST.get('username').lower()
+        email=request.POST.get('email').lower()
         password=request.POST.get('password')# receiving data from frontend
 
         try: #try to query user
-            user=User.objects.get(username=username)
+            user=User.objects.get(email=email)
         except:
             messages.error(request,'User Does Not Exist')
-        user=authenticate(request,username=username,password=password) # if exist, authenticate the user give us an error / give a user that mathches the credentials
+        user=authenticate(request,email=email,password=password) # if exist, authenticate the user give us an error / give a user that mathches the credentials
         if user is not None : # if we have a user
             login(request,user)# add session to database
             return redirect('home') #send logged in user to home page
@@ -41,10 +41,10 @@ def logoutUser(request):
 
 def registerPage(request):
     #page='register'
-    form=UserCreationForm() #create a template user creation form
+    form=MyUserCreationForm() #create a template user creation form
 
     if request.method == 'POST': #process form created
-        form=UserCreationForm(request.POST)# go through the usercreation form input made by user
+        form=MyUserCreationForm(request.POST)# go through the usercreation form input made by user
         if form.is_valid():#if form valid
             user=form.save(commit=False)  #check whether there are any dirty data (upper case in email for example) so dont commit straightaway
             user.username=user.username.lower() #turn username to lowercase if there are any uppercase
@@ -170,7 +170,7 @@ def updateUser(request):
     form=UserForm(instance=user)#pass form
 
     if request.method=='POST': #if post (update button pressed)
-        form=UserForm(request.POST,instance=user) #update user info
+        form=UserForm(request.POST,request.FILES,instance=user) #update user info
         if form.is_valid():
             form.save()
             return redirect('user-profile', pk=user.id)

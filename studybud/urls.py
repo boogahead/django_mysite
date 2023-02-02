@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings #
+from django.conf.urls.static import static
 #list of url paths such as home etc
 
 
@@ -24,3 +26,7 @@ urlpatterns = [
     path('',include('base.urls')),# when empty called, go to urls.py of base folder and let it handle
     path('api/',include('base.api.urls')) #any url starting with api will be sent to /api/urls.py to be dealt with
 ]
+
+urlpatterns+=static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
+#setting url such that MEDIA URL from settings, get files from media root and put them 
+#JUST CONNECT MEDIA ROOT WITH MEDIA URL
