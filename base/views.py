@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from .models import Room,Topic,Message,User #accessing our own user model
 from django.http import HttpResponse
 from .forms import RoomForm,UserForm,MyUserCreationForm
@@ -6,7 +6,7 @@ from django.db.models import Q
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login,logout
+from django.contrib.auth import authenticate, login,logout,get_user_model
 from django.http import HttpResponse
 #from django.contrib.auth.forms import UserCreationForm
 
@@ -186,3 +186,18 @@ def topicsPage(request):
 def activityPage(request): # store all activities in this website
     room_messages=Message.objects.all()
     return render(request,'base/activity.html',{'room_messages':room_messages})
+
+#####
+def follow(request, pk):
+    #user=request.user
+    if request.user.is_authenticated:
+        person = get_object_or_404(get_user_model(), pk=pk)
+        if person != request.user:
+            # if request.user.followings.filter(pk=user_pk).exists():
+            if person.followers.filter(pk=request.user.pk).exists():
+                person.followers.remove(request.user)
+            else:
+                person.followers.add(request.user)
+        return redirect('user-profile', pk=person.id)
+    return redirect('login')
+######3

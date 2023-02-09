@@ -9,7 +9,7 @@ class User(AbstractUser): #usermodel that we are using
 
     USERNAME_FIELD='email' #tell django that usernamefield will require email address to be entered
     avatar=models.ImageField(null=True,default="avatar.svg") #set image of user & default image
-
+    followings = models.ManyToManyField('self', symmetrical=False, related_name='followers')
     REQUIRED_FIELDS=[]
 
 # Create your models here.

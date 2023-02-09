@@ -19,9 +19,25 @@
           <div class="profile__info">
             <h3>{{user.username}}</h3>
             <p>@{{user.username}}</p>
+            <div>
+              Following : {{ user.followings.all|length }} / Follower : {{ user.followers.all|length }}
+            </div>
             {%if request.user == user%} <!--show the "edit" button if the user profile that we are seeing is the same as the user currently logged in-->
             <a href="{% url 'update-user' %}" class="btn btn--main btn--pill">Edit Profile</a>
             {%endif%}
+            {% if user != request.user %}
+            <div>
+              <form action="{% url 'follow' user.id%}" method='POST'>
+                {% csrf_token %}
+                {% if request.user in user.id.followers.all %}
+                  console.log('My message');
+                  <input type="submit" value='팔로우 취소'>
+                {% else %}
+                  <input type="submit" value='팔로우'>
+                {% endif %}
+              </form>
+            </div>  
+            {% endif %}
           </div>
           <div class="profile__about">
             <h3>About</h3>
