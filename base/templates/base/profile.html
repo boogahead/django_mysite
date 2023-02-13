@@ -13,7 +13,7 @@
         <div class="profile">
           <div class="profile__avatar">
             <div class="avatar avatar--large active">
-              <img src="https://randomuser.me/api/portraits/men/11.jpg" />
+              <img src="{{user.avatar.url}}" />
             </div>
           </div>
           <div class="profile__info">
@@ -29,11 +29,10 @@
             <div>
               <form action="{% url 'follow' user.id%}" method='POST'>
                 {% csrf_token %}
-                {% if request.user in user.id.followers.all %}
-                  console.log('My message');
-                  <input type="submit" value='팔로우 취소'>
+                {% if request.user in user.followers.all %}
+                  <input type="submit" value='Unfollow'>
                 {% else %}
-                  <input type="submit" value='팔로우'>
+                  <input type="submit" value='Follow'>
                 {% endif %}
               </form>
             </div>  
@@ -42,9 +41,7 @@
           <div class="profile__about">
             <h3>About</h3>
             <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur illo tenetur
-              facilis sunt nemo debitis quisquam hic atque aut? Ducimus alias placeat optio
-              accusamus repudiandae quis ab ex exercitationem rem?
+              {{user.bio}}
             </p>
           </div>
         </div>
